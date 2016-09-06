@@ -1,0 +1,273 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+<meta http-equiv="Content-type" name="viewport"
+	content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width">
+<link rel="stylesheet" href="jquery.mobile/jquery.mobile-1.4.5.min.css" />
+<link rel="stylesheet" href="index.css" />
+<script src="jquery.mobile/jquery-1.7.2.min"></script>
+<script src="jquery.mobile/jquery.mobile-1.4.5.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+<script type="text/javascript" charset="utf-8" src="index.js"></script>
+<script type="text/javascript" charset="utf-8" src="servisi.js"></script>
+</head>
+
+<!-- FUNKCIJE  -->
+
+<script type="text/javascript"
+	src="http://maps.google.com/maps/api/js?key=AIzaSyAZxxzq8BFDhUDYxREKCPWy8JAlc9OcBAI&sensor=true"></script>
+
+<script type="text/javascript" charset="utf-8">
+	document.addEventListener("deviceready", onDeviceReady, false);
+	var panel = '<div data-role="panel" id="mypanel" data-position="left" data-display="push" data-theme="b">'
+			+ '<div data-role="header" class="paddingMenu"><h1>Menu</h1></div>'
+			+ '<ul data-role="listview" data-inset="true"><li class="liCustom"><a href="#location" data-role="button" data-icon="location" class="ui-btn ">Location</a></li>'
+			+ '<li class="liCustom"><a href="#vacancy" data-ajax="false" data-role="button" data-icon="vacancy" class="ui-btn ">Vacancy</a></li>'
+			+ '<li class="liCustom"><a href="#review" data-ajax="false" data-role="button" data-icon="review" class="ui-btn ">Review</a></li>'
+			+ '<li class="liCustom"><a href="#ranking" data-ajax="false" data-role="button" data-icon="user" class="ui-btn ">Ranking</a></ul>'
+			+ '</div>';
+
+	$(document).one('pagebeforecreate', function() {
+		$.mobile.pageContainer.prepend(panel);
+		$("#mypanel").panel().enhanceWithin();
+
+	});
+</script>
+
+<script type="text/javascript">
+
+	$(document).on(
+			'focus',
+			'#vacancy',
+			getVacancies());
+	$(document).on(
+			'focus',
+			'#review',
+			getReviews());
+
+	$(document).on(
+			'pageinit',
+			'#location',
+			function() {
+				getDeviceLocation();
+				$('#content').height(getRealContentHeight());
+				var mapOptions = {
+					center : {
+						lat : -34,
+						lng : 151
+					},
+					zoom : 2,
+					mapTypeId : google.maps.MapTypeId.ROADMAP
+				};
+				map = new google.maps.Map(document
+						.getElementById('map_canvas'), mapOptions);
+				
+				google.maps.event.addListenerOnce(map, 'tilesloaded',
+						function() {
+							google.maps.event.trigger(map, 'resize');
+						});
+			});
+
+	function getRealContentHeight() {
+		var header = $.mobile.activePage
+				.find("div[data-role='header']:visible");
+		var footer = $.mobile.activePage
+				.find("div[data-role='footer']:visible");
+		var content = $.mobile.activePage
+				.find("div[data-role='content']:visible:visible");
+		var viewport_height = $(window).height();
+
+		var content_height = viewport_height - header.outerHeight()
+				- footer.outerHeight();
+		if ((content.outerHeight() - header.outerHeight() - footer
+				.outerHeight()) <= viewport_height) {
+			content_height -= (content.outerHeight() - content.height());
+		}
+		return content_height;
+	}
+</script>
+
+<body>
+
+	<!-- .....................Index.................... -->
+	<div data-role="page" id="index" data-theme="a">
+
+		<div data-role="header" data-theme="b">
+			<h1>eTourist</h1>
+		</div>
+
+		<div data-role="content">
+			<br>
+			<p class="naslov">Sign In</p>
+			<hr>
+			<br> <input type="text" id="username" placeholder="Username">
+			<input type="password" id="password" placeholder="Password">
+			<a href="#index" onclick="login();"
+				class="ui-btn ui-icon-arrow-r ui-btn-icon-right dugme">Sign In</a> <br>
+			<br>
+			<p class="naslov">New user</p>
+			<hr>
+			<br> <a href="#sign"
+				class="ui-btn ui-icon-plus ui-btn-icon-right dugme">Sign Up</a>
+		</div>
+
+		<div data-role="footer" data-position="fixed" class="footer-docs"
+			data-theme="b"></div>
+	</div>
+
+	<!-- .....................SignUp.................... -->
+	<div data-role="page" id="sign" data-theme="a">
+		<div data-role="header" data-theme="b">
+			<h1>eTourist</h1>
+		</div>
+
+		<div data-role="content">
+			<br>
+			<p class="naslov">Sign Up</p>
+			<hr>
+			<br> <input type="text" id="usernamer" placeholder="Username">
+			<input type="password" id="passwordr" placeholder="Password">
+			<input type="text" id="emailr" placeholder="E-mail"> <input
+				type="text" id="displayname" placeholder="Display name"> <input
+				type="text" id="firstname" placeholder="First name"> <input
+				type="text" id="lastname" placeholder="Last name"> <input
+				type="text" id="address" placeholder="Address"> <input
+				type="text" id="phonenumber" placeholder="Phone number"> <br>
+			<br> <a href="" onclick="register();"
+				class="ui-btn ui-icon-arrow-r ui-btn-icon-right dugme">Sign Up</a>
+		</div>
+
+		<div data-role="footer" data-position="fixed" class="footer-docs"
+			data-theme="b"></div>
+	</div>
+
+
+	<!-- .....................Vacancy.................... -->
+
+	<div data-role="page" id="vacancy" data-theme="a">
+		<div data-role="header" data-theme="b">
+			<a href="#mypanel"
+				class="ui-btn ui-btn-left ui-btn-icon-notext ui-icon-grid ui-corner-all"></a>
+			<h1>eTourist</h1>
+		</div>
+
+		<div data-role="content">
+			<table id="vacancy-content">
+				<thead>
+					<tr>
+						<th><input type="text" name="search" id="search"></td>
+						<th>
+							<button class="ui-btn" onclick="getVacancies()">Search</button>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					
+				</tbody>
+			</table>
+		</div>
+
+		<div data-role="footer"></div>
+	</div>
+	
+	<!-- .....................Vacancy.................... -->
+
+	<div data-role="page" id="vacancyView" data-theme="a">
+		<div data-role="header" data-theme="b">
+			<a href="#mypanel"
+				class="ui-btn ui-btn-left ui-btn-icon-notext ui-icon-grid ui-corner-all"></a>
+			<h1>eTourist</h1>
+		</div>
+
+		<div data-role="content">
+			<table id="vacancy-vacancyView">
+				<tbody>
+				</tbody>
+			</table>
+		</div>
+
+		<div data-role="footer"></div>
+	</div>
+
+
+	<!-- .....................Review.................... -->
+
+	<div data-role="page" id="review" data-theme="a">
+		<div data-role="header" data-theme="b">
+			<a href="#mypanel"
+				class="ui-btn ui-btn-left ui-btn-icon-notext ui-icon-grid ui-corner-all"></a>
+			<h1>eTourist</h1>
+		</div>
+
+		<div data-role="content">
+			<table id="review-content">
+				<thead>
+					<tr>
+						<th><input type="text" name="search" id="search"></td>
+						<th>
+							<button class="ui-btn" onclick="getReviews()">Search</button>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					
+				</tbody>
+			</table>
+		</div>
+
+		<div data-role="footer"></div>
+	</div>
+
+	<!-- .....................Ranking.................... -->
+
+	<div data-role="page" id="ranking" data-theme="a">
+		<div data-role="header" data-theme="b">
+			<a href="#mypanel"
+				class="ui-btn ui-btn-left ui-btn-icon-notext ui-icon-grid ui-corner-all"></a>
+			<h1>eTourist</h1>
+		</div>
+
+		<div data-role="content">
+			<table>
+				<tr>
+					<td><input type="text" name="search" id="search"></td>
+					<td>
+						<button class="ui-btn">Search</button>
+					</td>
+				</tr>
+				<tr>
+					<td><img src="jquery.mobile/images/user.png"></td>
+					<td>
+						<p>User 1</p>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div data-role="footer"></div>
+	</div>
+
+	<!-- .....................Location.................... -->
+
+	<div data-role="page" id="location" data-theme="a">
+		<div data-role="header" data-theme="b">
+			<a href="#vacancy"
+				class="ui-btn ui-btn-left ui-btn-icon-notext ui-icon-arrow-l ui-corner-all"></a>
+			<h1>eTourist</h1>
+		</div>
+
+		<div data-role="content" id="content">
+			<div id="map_canvas" style="height: 100%"></div>
+		</div>
+
+		<div data-role="footer">
+			<button class="ui-btn" onclick="getDeviceLocation()">GET ME</button>
+			<button class="ui-btn" onclick="spyMe()">SPY ME</button>
+			<button class="ui-btn" onclick="stopTrackingMe()">STOP TRACKING ME</button>
+		</div>
+	</div>
+
+</body>
+</html>

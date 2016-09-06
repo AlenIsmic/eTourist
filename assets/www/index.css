@@ -1,0 +1,67 @@
+#content {
+    padding: 0 !important;
+}
+
+.naslov{
+	font-size: 18px;
+	font-weight: normal;
+	margin: 0.3em 0px 0.6em 0px; 
+	padding-bottom: 0.1em;
+	color: #989898;	
+}
+
+.dugme {
+	border: 1px solid #0a3c59;
+	background: #3e779d;
+	background: -webkit-gradient(linear, left top, left bottom, from(#65a9d7), to(#3e779d));	
+	padding: 10.5px 21px;
+	border-radius: 6px;	
+	color: white;
+	font-size: 14px;
+	font-family: helvetica, serif;
+	vertical-align: middle;
+	
+	}
+
+
+.ui-icon-city:after {
+	background-image: url(jquery.mobile/images/way.png);
+	background-size: 18px 18px;
+}
+	
+.ui-icon-vacancy:after {
+	background-image: url(jquery.mobile/images/note.png);
+	background-size: 18px 18px;
+}
+.ui-icon-review:after {
+	background-image: url(jquery.mobile/images/blog.png);
+	background-size: 18px 18px;
+}
+.ui-icon-user:after {
+	background-image: url(jquery.mobile/images/user.png);
+	background-size: 18px 18px;
+}
+
+.liCustom{
+	display: inline-block;
+}
+
+.linkSize{
+    white-space: pre-wrap; /* css-3 */    
+    white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+    white-space: -pre-wrap; /* Opera 4-6 */    
+    white-space: -o-pre-wrap; /* Opera 7 */    
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
+}
+
+.paddingMenu{
+	padding-top:30px;
+	padding-bottom:30px;
+}
+
+.map{
+	position: absolute; /*THIS IS REQUIRED!*/
+	height: 100%;
+	width: 100%;
+	padding: 0;
+}
